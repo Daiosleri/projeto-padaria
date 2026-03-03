@@ -1,0 +1,47 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{% if form.instance.pk %}✏️ Editar Produto{% else %}➕ Adicionar Produto{% endif %}</h2>
+    <a href="/produtos/" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Nome do Produto</label>
+                <input type="text" name="nome" class="form-control" 
+                    value="{{ form.nome.value|default:'' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Descrição</label>
+                <textarea name="descricao" class="form-control" rows="3">{{ form.descricao.value|default:'' }}</textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Preço (R$)</label>
+                <input type="number" name="preco" class="form-control" 
+                    step="0.01" value="{{ form.preco.value|default:'' }}" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Categoria</label>
+                <select name="categoria" class="form-select" required>
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" 
+                        {% if form.categoria.value == categoria.id %}selected{% endif %}>
+                        {{ categoria.nome }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="disponivel" class="form-check-input" 
+                    id="disponivel" {% if form.disponivel.value %}checked{% endif %}>
+                <label class="form-check-label" for="disponivel">Disponível</label>
+            </div>
+            <button type="submit" class="btn btn-success">💾 Salvar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

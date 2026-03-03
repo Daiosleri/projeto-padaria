@@ -1,0 +1,22 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🗑️ Excluir Produto</h2>
+    <a href="/produtos/" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body text-center">
+        <h4 class="mb-4">Tem certeza que deseja excluir o produto abaixo?</h4>
+        <p class="fs-5"><strong>{{ produto.nome }}</strong></p>
+        <p>Categoria: {{ produto.categoria }}</p>
+        <p>Preço: R$ {{ produto.preco }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <a href="/produtos/" class="btn btn-secondary me-3">❌ Cancelar</a>
+            <button type="submit" class="btn btn-danger">🗑️ Confirmar Exclusão</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

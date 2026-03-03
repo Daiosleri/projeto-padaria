@@ -1,0 +1,47 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>Bem-vindo ao Sistema da Padaria - Dois Irmaos</h2>
+    <p class="text-muted">Selecione uma opcao abaixo para gerenciar a padaria</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <a href="/produtos/" class="text-decoration-none">
+            <div class="card shadow text-center p-4 h-100" style="border-top: 4px solid #8B4513;">
+                <div style="font-size: 50px">🥐</div>
+                <h5 class="mt-3">Produtos</h5>
+                <p class="text-muted">Cadastrar e gerenciar produtos do cardapio</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="#" class="text-decoration-none">
+            <div class="card shadow text-center p-4 h-100" style="border-top: 4px solid #198754;">
+                <div style="font-size: 50px">👨‍💼</div>
+                <h5 class="mt-3">Funcionarios</h5>
+                <p class="text-muted">Gerenciar funcionarios e turnos</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="#" class="text-decoration-none">
+            <div class="card shadow text-center p-4 h-100" style="border-top: 4px solid #0d6efd;">
+                <div style="font-size: 50px">🛒</div>
+                <h5 class="mt-3">Pedidos</h5>
+                <p class="text-muted">Registrar e acompanhar vendas</p>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-3">
+        <a href="#" class="text-decoration-none">
+            <div class="card shadow text-center p-4 h-100" style="border-top: 4px solid #ffc107;">
+                <div style="font-size: 50px">📊</div>
+                <h5 class="mt-3">Relatorios</h5>
+                <p class="text-muted">Visualizar relatorios financeiros</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}
