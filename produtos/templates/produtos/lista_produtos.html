@@ -2,10 +2,11 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>🥐 Produtos</h2>
-    <a href="/produtos/adicionar/" class="btn btn-success">
-        + Adicionar Produto
-    </a>
+    <h2 class="mb-0">🥐 Produtos</h2>
+    <div class="d-flex gap-2">
+        <a href="/produtos/adicionar/" class="btn btn-success">+ Adicionar Produto</a>
+        <a href="/" class="btn btn-secondary">← Voltar</a>
+    </div>
 </div>
 
 <div class="card shadow">
@@ -16,6 +17,7 @@
                     <th>Nome</th>
                     <th>Categoria</th>
                     <th>Preço</th>
+                    <th>Tipo</th>
                     <th>Disponível</th>
                     <th>Ações</th>
                 </tr>
@@ -25,7 +27,14 @@
                 <tr>
                     <td>{{ produto.nome }}</td>
                     <td>{{ produto.categoria }}</td>
-                    <td>R$ {{ produto.preco }}</td>
+                    <td>{{ produto.preco_formatado }}</td>
+                    <td>
+                        {% if produto.tipo_preco == 'kg' %}
+                            <span class="badge bg-primary">Por Kg</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Por Unidade</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if produto.disponivel %}
                             <span class="badge bg-success">Sim</span>
@@ -40,7 +49,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center">Nenhum produto cadastrado ainda.</td>
+                    <td colspan="6" class="text-center">Nenhum produto cadastrado ainda.</td>
                 </tr>
                 {% endfor %}
             </tbody>

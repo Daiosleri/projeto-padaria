@@ -12,7 +12,7 @@
             {% csrf_token %}
             <div class="mb-3">
                 <label class="form-label">Nome do Produto</label>
-                <input type="text" name="nome" class="form-control" 
+                <input type="text" name="nome" class="form-control"
                     value="{{ form.nome.value|default:'' }}" required>
             </div>
             <div class="mb-3">
@@ -20,23 +20,33 @@
                 <textarea name="descricao" class="form-control" rows="3">{{ form.descricao.value|default:'' }}</textarea>
             </div>
             <div class="mb-3">
-                <label class="form-label">Preço (R$)</label>
-                <input type="number" name="preco" class="form-control" 
-                    step="0.01" value="{{ form.preco.value|default:'' }}" required>
-            </div>
-            <div class="mb-3">
                 <label class="form-label">Categoria</label>
                 <select name="categoria" class="form-select" required>
+                    <option value="">Selecione uma categoria...</option>
                     {% for categoria in categorias %}
-                    <option value="{{ categoria.id }}" 
+                    <option value="{{ categoria.id }}"
                         {% if form.categoria.value == categoria.id %}selected{% endif %}>
                         {{ categoria.nome }}
                     </option>
                     {% endfor %}
                 </select>
             </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Preço (R$)</label>
+                    <input type="number" name="preco" class="form-control"
+                        step="0.01" value="{{ form.preco.value|default:'' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tipo de Preço</label>
+                    <select name="tipo_preco" class="form-select">
+                        <option value="unidade" {% if form.tipo_preco.value == 'unidade' %}selected{% endif %}>Por Unidade</option>
+                        <option value="kg" {% if form.tipo_preco.value == 'kg' %}selected{% endif %}>Por Kg</option>
+                    </select>
+                </div>
+            </div>
             <div class="mb-3 form-check">
-                <input type="checkbox" name="disponivel" class="form-check-input" 
+                <input type="checkbox" name="disponivel" class="form-check-input"
                     id="disponivel" {% if form.disponivel.value %}checked{% endif %}>
                 <label class="form-check-label" for="disponivel">Disponível</label>
             </div>
