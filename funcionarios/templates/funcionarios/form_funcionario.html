@@ -1,0 +1,60 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{% if form.instance.pk %}✏️ Editar Funcionario{% else %}➕ Adicionar Funcionario{% endif %}</h2>
+    <a href="/funcionarios/" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Nome</label>
+                <input type="text" name="nome" class="form-control"
+                    value="{{ form.nome.value|default:'' }}" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Cargo</label>
+                    <select name="cargo" class="form-select" required>
+                        <option value="">Selecione um cargo...</option>
+                        <option value="gerente" {% if form.cargo.value == 'gerente' %}selected{% endif %}>Gerente</option>
+                        <option value="caixa" {% if form.cargo.value == 'caixa' %}selected{% endif %}>Caixa</option>
+                        <option value="atendente" {% if form.cargo.value == 'atendente' %}selected{% endif %}>Atendente</option>
+                        <option value="padeiro" {% if form.cargo.value == 'padeiro' %}selected{% endif %}>Padeiro</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Turno</label>
+                    <select name="turno" class="form-select" required>
+                        <option value="">Selecione um turno...</option>
+                        <option value="manha" {% if form.turno.value == 'manha' %}selected{% endif %}>Manha</option>
+                        <option value="tarde" {% if form.turno.value == 'tarde' %}selected{% endif %}>Tarde</option>
+                        <option value="noite" {% if form.turno.value == 'noite' %}selected{% endif %}>Noite</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Salario (R$)</label>
+                    <input type="number" name="salario" class="form-control"
+                        step="0.01" value="{{ form.salario.value|default:'' }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Telefone</label>
+                    <input type="text" name="telefone" class="form-control"
+                        value="{{ form.telefone.value|default:'' }}">
+                </div>
+            </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" name="ativo" class="form-check-input"
+                    id="ativo" {% if form.ativo.value %}checked{% endif %}>
+                <label class="form-check-label" for="ativo">Ativo</label>
+            </div>
+            <button type="submit" class="btn btn-success">💾 Salvar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

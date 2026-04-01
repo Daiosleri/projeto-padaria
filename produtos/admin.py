@@ -8,10 +8,6 @@ class CategoriaAdmin(admin.ModelAdmin):
 
 @admin.register(Produto)
 class ProdutoAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'categoria', 'preco_em_reais', 'disponivel')
+    list_display = ('nome', 'categoria', 'tipo_preco', 'preco_formatado', 'disponivel')
     search_fields = ('nome',)
-    list_filter = ('categoria', 'disponivel')
-
-    def preco_em_reais(self, obj):
-        return f'R$ {obj.preco:.2f}'.replace('.', ',')
-    preco_em_reais.short_description = 'Preço'
+    list_filter = ('categoria', 'tipo_preco', 'disponivel')
