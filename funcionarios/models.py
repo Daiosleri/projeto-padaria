@@ -19,11 +19,15 @@ class Funcionario(models.Model):
     turno = models.CharField(max_length=10, choices=TURNO_CHOICES)
     salario = models.DecimalField(max_digits=8, decimal_places=2)
     telefone = models.CharField(max_length=20, blank=True)
+    data_admissao = models.DateField(null=True, blank=True)
     ativo = models.BooleanField(default=True)
     criado_em = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.nome
+
+    def salario_formatado(self):
+        return f'R$ {self.salario:.2f}'.replace('.', ',')
 
     class Meta:
         verbose_name = 'Funcionario'

@@ -6,12 +6,31 @@ from django import forms
 class FuncionarioForm(forms.ModelForm):
     class Meta:
         model = Funcionario
-        fields = ['nome', 'cargo', 'turno', 'salario', 'telefone', 'ativo']
+        fields = ['nome', 'cargo', 'turno', 'salario', 'telefone', 'data_admissao', 'ativo']
+        widgets = {
+            'data_admissao': forms.DateInput(attrs={'type': 'date'}),
+        }
 
 
 def funcionarios(request):
     lista = Funcionario.objects.all()
-    return render(request, 'funcionarios/funcionarios.html', {'funcionarios': lista})
+
+    cargo = request.GET.get('cargo')
+    turno = request.GET.get('turno')
+
+    if cargo:
+        lista = lista.filter(cargo=cargo)
+    if turno:
+        lista = lista.filter(turno=turno)
+
+    total_ativos = Funcionario.objects.filter(ativo=True).count()
+
+    return render(request, 'funcionarios/funcionarios.html', {
+        'funcionarios': lista,
+        'total_ativos': total_ativos,
+        'cargo_selecionado': cargo,
+        'turno_selecionado': turno,
+    })
 
 
 def adicionar_funcionario(request):

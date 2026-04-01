@@ -8,53 +8,104 @@
 
 <div class="card shadow">
     <div class="card-body">
-        <form method="post">
+        <form method="post" id="formFuncionario">
             {% csrf_token %}
             <div class="mb-3">
                 <label class="form-label">Nome</label>
                 <input type="text" name="nome" class="form-control"
-                    value="{{ form.nome.value|default:'' }}" required>
+                    value="{{ form.instance.nome|default:'' }}" required>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Cargo</label>
                     <select name="cargo" class="form-select" required>
                         <option value="">Selecione um cargo...</option>
-                        <option value="gerente" {% if form.cargo.value == 'gerente' %}selected{% endif %}>Gerente</option>
-                        <option value="caixa" {% if form.cargo.value == 'caixa' %}selected{% endif %}>Caixa</option>
-                        <option value="atendente" {% if form.cargo.value == 'atendente' %}selected{% endif %}>Atendente</option>
-                        <option value="padeiro" {% if form.cargo.value == 'padeiro' %}selected{% endif %}>Padeiro</option>
+                        <option value="gerente" {% if form.instance.cargo == 'gerente' %}selected{% endif %}>Gerente</option>
+                        <option value="caixa" {% if form.instance.cargo == 'caixa' %}selected{% endif %}>Caixa</option>
+                        <option value="atendente" {% if form.instance.cargo == 'atendente' %}selected{% endif %}>Atendente</option>
+                        <option value="padeiro" {% if form.instance.cargo == 'padeiro' %}selected{% endif %}>Padeiro</option>
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Turno</label>
                     <select name="turno" class="form-select" required>
                         <option value="">Selecione um turno...</option>
-                        <option value="manha" {% if form.turno.value == 'manha' %}selected{% endif %}>Manha</option>
-                        <option value="tarde" {% if form.turno.value == 'tarde' %}selected{% endif %}>Tarde</option>
-                        <option value="noite" {% if form.turno.value == 'noite' %}selected{% endif %}>Noite</option>
+                        <option value="manha" {% if form.instance.turno == 'manha' %}selected{% endif %}>Manha</option>
+                        <option value="tarde" {% if form.instance.turno == 'tarde' %}selected{% endif %}>Tarde</option>
+                        <option value="noite" {% if form.instance.turno == 'noite' %}selected{% endif %}>Noite</option>
                     </select>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Salario (R$)</label>
-                    <input type="number" name="salario" class="form-control"
-                        step="0.01" value="{{ form.salario.value|default:'' }}" required>
+                    <label class="form-label">Salario</label>
+                    <input type="text" id="salario_display" class="form-control"
+                        placeholder="R$ 0,00"
+                        value="{% if form.instance.salario %}{{ form.instance.salario }}{% endif %}">
+                    <input type="hidden" name="salario" id="salario_hidden"
+                        value="{{ form.instance.salario|default:'' }}">
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Telefone</label>
-                    <input type="text" name="telefone" class="form-control"
-                        value="{{ form.telefone.value|default:'' }}">
+                    <input type="text" name="telefone" class="form-control" id="telefone"
+                        placeholder="(11)99999-9999"
+                        value="{{ form.instance.telefone|default:'' }}">
                 </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Data de Admissao</label>
+                <input type="date" name="data_admissao" class="form-control"
+                    value="{{ form.instance.data_admissao|date:'Y-m-d'|default:'' }}">
             </div>
             <div class="mb-3 form-check">
                 <input type="checkbox" name="ativo" class="form-check-input"
-                    id="ativo" {% if form.ativo.value %}checked{% endif %}>
+                    id="ativo" {% if form.instance.ativo %}checked{% endif %}>
                 <label class="form-check-label" for="ativo">Ativo</label>
             </div>
             <button type="submit" class="btn btn-success">💾 Salvar</button>
         </form>
     </div>
 </div>
+
+<script>
+// Mascara de telefone
+document.getElementById('telefone').addEventListener('input', function(e) {
+    let v = e.target.value.replace(/\D/g, '');
+    if (v.length <= 11) {
+        v = v.replace(/^(\d{2})(\d)/g, '($1)$2');
+        v = v.replace(/(\d{5})(\d{4})$/, '$1-$2');
+        e.target.value = v;
+    }
+});
+
+// Mascara de salario
+function formatarSalario(valor) {
+    valor = valor.replace(/\D/g, '');
+    valor = (parseInt(valor) / 100).toFixed(2);
+    valor = valor.replace('.', ',');
+    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    return 'R$ ' + valor;
+}
+
+const salarioDisplay = document.getElementById('salario_display');
+const salarioHidden = document.getElementById('salario_hidden');
+
+// Formatar valor inicial
+if (salarioDisplay.value) {
+    let v = parseFloat(salarioDisplay.value).toFixed(2);
+    salarioDisplay.value = formatarSalario(v.replace('.', ''));
+}
+
+salarioDisplay.addEventListener('input', function(e) {
+    let v = formatarSalario(e.target.value);
+    e.target.value = v;
+    salarioHidden.value = v.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
+});
+
+// Antes de enviar o form, garantir valor correto no hidden
+document.getElementById('formFuncionario').addEventListener('submit', function() {
+    let v = salarioDisplay.value.replace('R$ ', '').replace(/\./g, '').replace(',', '.');
+    salarioHidden.value = v;
+});
+</script>
 {% endblock %}

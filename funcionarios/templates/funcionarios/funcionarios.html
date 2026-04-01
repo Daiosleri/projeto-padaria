@@ -9,6 +9,45 @@
     </div>
 </div>
 
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card shadow text-center p-3" style="border-top: 4px solid #198754;">
+            <h6 class="text-muted">Funcionarios Ativos</h6>
+            <h2 class="text-success">{{ total_ativos }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Filtrar por Cargo</label>
+                <select name="cargo" class="form-select">
+                    <option value="">Todos os cargos</option>
+                    <option value="gerente" {% if cargo_selecionado == 'gerente' %}selected{% endif %}>Gerente</option>
+                    <option value="caixa" {% if cargo_selecionado == 'caixa' %}selected{% endif %}>Caixa</option>
+                    <option value="atendente" {% if cargo_selecionado == 'atendente' %}selected{% endif %}>Atendente</option>
+                    <option value="padeiro" {% if cargo_selecionado == 'padeiro' %}selected{% endif %}>Padeiro</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Filtrar por Turno</label>
+                <select name="turno" class="form-select">
+                    <option value="">Todos os turnos</option>
+                    <option value="manha" {% if turno_selecionado == 'manha' %}selected{% endif %}>Manha</option>
+                    <option value="tarde" {% if turno_selecionado == 'tarde' %}selected{% endif %}>Tarde</option>
+                    <option value="noite" {% if turno_selecionado == 'noite' %}selected{% endif %}>Noite</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary">🔍 Filtrar</button>
+                <a href="/funcionarios/" class="btn btn-secondary">Limpar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card shadow">
     <div class="card-body">
         <table class="table table-hover">
@@ -19,6 +58,7 @@
                     <th>Turno</th>
                     <th>Salario</th>
                     <th>Telefone</th>
+                    <th>Admissao</th>
                     <th>Ativo</th>
                     <th>Acoes</th>
                 </tr>
@@ -29,8 +69,9 @@
                     <td>{{ funcionario.nome }}</td>
                     <td>{{ funcionario.get_cargo_display }}</td>
                     <td>{{ funcionario.get_turno_display }}</td>
-                    <td>R$ {{ funcionario.salario }}</td>
+                    <td>{{ funcionario.salario_formatado }}</td>
                     <td>{{ funcionario.telefone|default:"-" }}</td>
+                    <td>{{ funcionario.data_admissao|default:"-" }}</td>
                     <td>
                         {% if funcionario.ativo %}
                             <span class="badge bg-success">Sim</span>
@@ -45,7 +86,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="text-center">Nenhum funcionario cadastrado ainda.</td>
+                    <td colspan="8" class="text-center">Nenhum funcionario cadastrado ainda.</td>
                 </tr>
                 {% endfor %}
             </tbody>
