@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Funcionario(models.Model):
     CARGO_CHOICES = [
@@ -14,6 +15,13 @@ class Funcionario(models.Model):
         ('noite', 'Noite'),
     ]
 
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name='Usuario do Sistema'
+    )
     nome = models.CharField(max_length=200)
     cargo = models.CharField(max_length=20, choices=CARGO_CHOICES)
     turno = models.CharField(max_length=10, choices=TURNO_CHOICES)

@@ -1,4 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from .models import Funcionario
 from django import forms
 
@@ -6,15 +8,18 @@ from django import forms
 class FuncionarioForm(forms.ModelForm):
     class Meta:
         model = Funcionario
-        fields = ['nome', 'cargo', 'turno', 'salario', 'telefone', 'data_admissao', 'ativo']
+        fields = ['usuario', 'nome', 'cargo', 'turno', 'salario', 'telefone', 'data_admissao', 'ativo']
         widgets = {
             'data_admissao': forms.DateInput(attrs={'type': 'date'}),
         }
 
 
+@login_required
 def funcionarios(request):
-    lista = Funcionario.objects.all()
+    if not request.user.is_staff:
+        return redirect('/')
 
+    lista = Funcionario.objects.all()
     cargo = request.GET.get('cargo')
     turno = request.GET.get('turno')
 
@@ -33,7 +38,10 @@ def funcionarios(request):
     })
 
 
+@login_required
 def adicionar_funcionario(request):
+    if not request.user.is_staff:
+        return redirect('/')
     form = FuncionarioForm()
     if request.method == 'POST':
         form = FuncionarioForm(request.POST)
@@ -43,7 +51,10 @@ def adicionar_funcionario(request):
     return render(request, 'funcionarios/form_funcionario.html', {'form': form})
 
 
+@login_required
 def editar_funcionario(request, id):
+    if not request.user.is_staff:
+        return redirect('/')
     funcionario = get_object_or_404(Funcionario, id=id)
     form = FuncionarioForm(instance=funcionario)
     if request.method == 'POST':
@@ -54,7 +65,10 @@ def editar_funcionario(request, id):
     return render(request, 'funcionarios/form_funcionario.html', {'form': form})
 
 
+@login_required
 def excluir_funcionario(request, id):
+    if not request.user.is_staff:
+        return redirect('/')
     funcionario = get_object_or_404(Funcionario, id=id)
     if request.method == 'POST':
         funcionario.delete()
