@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Funcionario(models.Model):
     CARGO_CHOICES = [
         ('gerente', 'Gerente'),
@@ -40,3 +41,31 @@ class Funcionario(models.Model):
     class Meta:
         verbose_name = 'Funcionario'
         verbose_name_plural = 'Funcionarios'
+
+
+class DocumentoFuncionario(models.Model):
+    TIPO_CHOICES = [
+        ('contrato', 'Contrato'),
+        ('rg', 'RG'),
+        ('cpf', 'CPF'),
+        ('exame', 'Exame Medico'),
+        ('curriculo', 'Curriculo'),
+        ('outro', 'Outro'),
+    ]
+
+    funcionario = models.ForeignKey(
+        Funcionario,
+        on_delete=models.CASCADE,
+        related_name='documentos'
+    )
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    descricao = models.CharField(max_length=200, blank=True)
+    arquivo = models.FileField(upload_to='documentos/')
+    enviado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.funcionario.nome} - {self.get_tipo_display()}'
+
+    class Meta:
+        verbose_name = 'Documento'
+        verbose_name_plural = 'Documentos'
