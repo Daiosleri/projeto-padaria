@@ -6,10 +6,7 @@ from produtos.models import Produto
 
 @login_required
 def lista_pedidos(request):
-    if request.user.is_staff:
-        pedidos = Pedido.objects.all()
-    else:
-        pedidos = Pedido.objects.filter(funcionario=request.user)
+    pedidos = Pedido.objects.all()
 
     status = request.GET.get('status')
     if status:
