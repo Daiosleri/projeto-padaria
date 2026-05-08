@@ -1,0 +1,53 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>✅ Fechar Pedido #{{ pedido.id }}</h2>
+    <a href="/pedidos/{{ pedido.id }}/" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="mb-4">Resumo do Pedido</h5>
+        <table class="table table-hover mb-4">
+            <thead class="table-dark">
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in pedido.itens.all %}
+                <tr>
+                    <td>{{ item.produto.nome }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.subtotal_formatado }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="table-dark">
+                    <td colspan="2"><strong>Total</strong></td>
+                    <td><strong>{{ pedido.total_formatado }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Forma de Pagamento</label>
+                <select name="forma_pagamento" class="form-select" required>
+                    <option value="dinheiro" {% if pedido.forma_pagamento == 'dinheiro' %}selected{% endif %}>Dinheiro</option>
+                    <option value="debito" {% if pedido.forma_pagamento == 'debito' %}selected{% endif %}>Cartao Debito</option>
+                    <option value="credito" {% if pedido.forma_pagamento == 'credito' %}selected{% endif %}>Cartao Credito</option>
+                    <option value="pix" {% if pedido.forma_pagamento == 'pix' %}selected{% endif %}>Pix</option>
+                </select>
+            </div>
+            <a href="/pedidos/{{ pedido.id }}/" class="btn btn-secondary me-2">❌ Cancelar</a>
+            <button type="submit" class="btn btn-success">✅ Confirmar Fechamento</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

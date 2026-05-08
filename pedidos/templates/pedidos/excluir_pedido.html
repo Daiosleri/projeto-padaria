@@ -1,0 +1,23 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🗑️ Excluir Pedido</h2>
+    <a href="/pedidos/" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body text-center">
+        <h4 class="mb-4">Tem certeza que deseja excluir o pedido abaixo?</h4>
+        <p class="fs-5"><strong>Pedido #{{ pedido.id }}</strong></p>
+        <p>Status: {{ pedido.get_status_display }}</p>
+        <p>Total: {{ pedido.total_formatado }}</p>
+        <p>Data: {{ pedido.criado_em|date:"d/m/Y H:i" }}</p>
+        <form method="post">
+            {% csrf_token %}
+            <a href="/pedidos/" class="btn btn-secondary me-3">❌ Cancelar</a>
+            <button type="submit" class="btn btn-danger">🗑️ Confirmar Exclusao</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

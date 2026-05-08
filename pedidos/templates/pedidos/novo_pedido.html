@@ -1,0 +1,26 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🛒 Novo Pedido</h2>
+    <a href="/pedidos/" class="btn btn-secondary">← Voltar</a>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Forma de Pagamento</label>
+                <select name="forma_pagamento" class="form-select" required>
+                    <option value="dinheiro">Dinheiro</option>
+                    <option value="debito">Cartao Debito</option>
+                    <option value="credito">Cartao Credito</option>
+                    <option value="pix">Pix</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">🛒 Abrir Pedido</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

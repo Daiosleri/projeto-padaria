@@ -1,0 +1,138 @@
+{% extends 'produtos/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>🛒 Pedido #{{ pedido.id }}</h2>
+    <div class="d-flex gap-2">
+        {% if pedido.status == 'aberto' %}
+        <a href="/pedidos/{{ pedido.id }}/fechar/" class="btn btn-success">✅ Fechar Pedido</a>
+        {% endif %}
+        <a href="/pedidos/" class="btn btn-secondary">← Voltar</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Informacoes do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Status:</strong>
+                    {% if pedido.status == 'aberto' %}
+                        <span class="badge bg-warning text-dark">Aberto</span>
+                    {% else %}
+                        <span class="badge bg-success">Fechado</span>
+                    {% endif %}
+                </p>
+                <p><strong>Pagamento:</strong> {{ pedido.get_forma_pagamento_display }}</p>
+                <p><strong>Funcionario:</strong> {{ pedido.funcionario.username|default:"-" }}</p>
+                <p><strong>Data:</strong> {{ pedido.criado_em|date:"d/m/Y H:i" }}</p>
+                {% if pedido.observacao %}
+                <div class="alert alert-info mt-2">
+                    <strong>Observacao:</strong> {{ pedido.observacao }}
+                </div>
+                {% endif %}
+                <hr>
+                <h4 class="text-success">Total: {{ pedido.total_formatado }}</h4>
+            </div>
+        </div>
+
+        {% if pedido.status == 'aberto' %}
+        <div class="card shadow mt-4">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Adicionar Item</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="item">
+                    <div class="mb-3">
+                        <label class="form-label">Produto</label>
+                        <select name="produto" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            {% for produto in produtos %}
+                            <option value="{{ produto.id }}">
+                                {{ produto.nome }} — {{ produto.preco_formatado }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" name="quantidade" class="form-control"
+                            step="0.001" min="0.001" value="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">+ Adicionar</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow mt-4">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Observacao</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="acao" value="observacao">
+                    <div class="mb-3">
+                        <textarea name="observacao" class="form-control" rows="3"
+                            placeholder="Digite uma observacao...">{{ pedido.observacao|default:'' }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">💾 Salvar Observacao</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Itens do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Preco Unit.</th>
+                            <th>Quantidade</th>
+                            <th>Subtotal</th>
+                            {% if pedido.status == 'aberto' %}
+                            <th>Remover</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pedido.itens.all %}
+                        <tr>
+                            <td>{{ item.produto.nome }}</td>
+                            <td>{{ item.produto.preco_formatado }}</td>
+                            <td>{{ item.quantidade }}</td>
+                            <td>{{ item.subtotal_formatado }}</td>
+                            {% if pedido.status == 'aberto' %}
+                            <td>
+                                <a href="/pedidos/item/{{ item.id }}/remover/" class="btn btn-sm btn-danger">🗑️</a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Nenhum item adicionado.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-dark">
+                            <td colspan="3"><strong>Total</strong></td>
+                            <td colspan="2"><strong>{{ pedido.total_formatado }}</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
