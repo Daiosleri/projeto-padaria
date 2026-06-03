@@ -2,15 +2,219 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>📊 Relatórios</h2>
+    <h2>📊 Relatorios de Vendas</h2>
     <a href="/" class="btn btn-secondary">← Voltar</a>
 </div>
 
-<div class="card shadow">
-    <div class="card-body text-center py-5">
-        <div style="font-size: 80px">🚧</div>
-        <h3 class="mt-3">Em Construção</h3>
-        <p class="text-muted">Esta funcionalidade estará disponível em breve!</p>
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Periodo</label>
+                <select name="periodo" class="form-select" id="selectPeriodo" onchange="mostrarMes()">
+                    <option value="7dias" {% if periodo == '7dias' %}selected{% endif %}>Ultimos 7 dias</option>
+                    <option value="30dias" {% if periodo == '30dias' %}selected{% endif %}>Ultimos 30 dias</option>
+                    <option value="mes" {% if periodo == 'mes' %}selected{% endif %}>Mes de</option>
+                    <option value="12meses" {% if periodo == '12meses' %}selected{% endif %}>Ultimos 365 dias</option>
+                </select>
+            </div>
+            <div class="col-md-3" id="campoMes" style="display: {% if periodo == 'mes' %}block{% else %}none{% endif %};">
+                <label class="form-label">Selecione o Mes</label>
+                <input type="month" name="mes" class="form-control" value="{{ mes_especifico }}">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">🔍 Filtrar</button>
+            </div>
+        </form>
     </div>
 </div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow text-center p-3" style="border-top: 4px solid #198754;">
+            <h6 class="text-muted">Faturamento Total</h6>
+            <h2 class="text-success">R$ {{ total_geral|floatformat:2 }}</h2>
+            <small class="text-muted">{{ label_periodo }}</small>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow text-center p-3" style="border-top: 4px solid #0d6efd;">
+            <h6 class="text-muted">Total de Pedidos</h6>
+            <h2 class="text-primary">{{ total_pedidos }}</h2>
+            <small class="text-muted">{{ label_periodo }}</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Faturamento por Periodo</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graficoFaturamento"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Quantidade de Pedidos por Periodo</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graficoPedidos"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Produtos Mais Vendidos</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="graficoProdutos"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header table-dark">
+                <h5 class="mb-0">Detalhamento de Produtos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Quantidade Vendida</th>
+                            <th>Faturado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in produtos_mais_vendidos %}
+                        <tr>
+                            <td>{{ produto.produto__nome }}</td>
+                            <td>{{ produto.total_quantidade }}</td>
+                            <td>R$ {{ produto.total_faturado|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center">Nenhum produto vendido ainda.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header table-dark">
+        <h5 class="mb-0">Detalhamento por Periodo</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Periodo</th>
+                    <th>Quantidade de Pedidos</th>
+                    <th>Faturamento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venda in vendas %}
+                <tr>
+                    <td>{{ venda.periodo|date:"d/m/Y" }}</td>
+                    <td>{{ venda.quantidade }}</td>
+                    <td>R$ {{ venda.total|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">Nenhuma venda encontrada no periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function mostrarMes() {
+        const periodo = document.getElementById('selectPeriodo').value;
+        const campoMes = document.getElementById('campoMes');
+        campoMes.style.display = periodo === 'mes' ? 'block' : 'none';
+    }
+
+    const labels = {{ labels|safe }};
+    const dadosTotal = {{ dados_total|safe }};
+    const dadosQuantidade = {{ dados_quantidade|safe }};
+    const labelsProdutos = {{ labels_produtos|safe }};
+    const dadosProdutos = {{ dados_produtos|safe }};
+
+    new Chart(document.getElementById('graficoFaturamento'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Faturamento (R$)',
+                data: dadosTotal,
+                backgroundColor: 'rgba(25, 135, 84, 0.7)',
+                borderColor: 'rgba(25, 135, 84, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    new Chart(document.getElementById('graficoPedidos'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Pedidos',
+                data: dadosQuantidade,
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                borderColor: 'rgba(13, 110, 253, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    new Chart(document.getElementById('graficoProdutos'), {
+        type: 'bar',
+        data: {
+            labels: labelsProdutos,
+            datasets: [{
+                label: 'Quantidade Vendida',
+                data: dadosProdutos,
+                backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                borderColor: 'rgba(255, 193, 7, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+</script>
 {% endblock %}
